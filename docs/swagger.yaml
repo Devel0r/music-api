@@ -1,0 +1,227 @@
+basePath: /
+definitions:
+  model.Song:
+    properties:
+      created_at:
+        example: "2024-01-01T12:00:00Z"
+        type: string
+      group_name:
+        example: Muse
+        type: string
+      id:
+        example: 1
+        type: integer
+      lyrics:
+        example: Ooh baby, don't you know I suffer?...
+        type: string
+      release_date:
+        example: 16.07.2006
+        type: string
+      song_title:
+        example: Supermassive Black Hole
+        type: string
+      youtube_link:
+        example: https://youtu.be/Xsp3_a-PMTw
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API for managing music library
+  title: Music API
+  version: "1.0"
+paths:
+  /songs:
+    get:
+      description: Get songs with filters and pagination
+      parameters:
+      - description: Filter by group
+        in: query
+        name: group
+        type: string
+      - description: Filter by song title
+        in: query
+        name: song
+        type: string
+      - description: Filter by release date
+        in: query
+        name: release_date
+        type: string
+      - description: Limit (default 10)
+        in: query
+        name: limit
+        type: integer
+      - description: Offset (default 0)
+        in: query
+        name: offset
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Song'
+            type: array
+      summary: Get all songs
+      tags:
+      - songs
+    post:
+      consumes:
+      - application/json
+      description: Add new song to library with data from external API
+      parameters:
+      - description: Song data
+        in: body
+        name: song
+        required: true
+        schema:
+          $ref: '#/definitions/model.Song'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Add new song
+      tags:
+      - songs
+  /songs/{id}:
+    delete:
+      description: Delete song from library
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete song
+      tags:
+      - songs
+    get:
+      description: Get song details by its ID
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Song'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get song by ID
+      tags:
+      - songs
+    put:
+      consumes:
+      - application/json
+      description: Update existing song data
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated song data
+        in: body
+        name: song
+        required: true
+        schema:
+          $ref: '#/definitions/model.Song'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update song
+      tags:
+      - songs
+  /songs/{id}/text:
+    get:
+      description: Get song text with pagination by verses
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Page number (default 1)
+        in: query
+        name: page
+        type: integer
+      - description: Verses per page (default 3)
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get paginated song lyrics
+      tags:
+      - songs
+swagger: "2.0"
